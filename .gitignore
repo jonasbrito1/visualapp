@@ -3,11 +3,14 @@ node_modules
 .pnp
 .pnp.js
 
-# Environment
+# Environment — NUNCA commitar secrets
 .env
 .env.local
 .env.production
+.env.production.local
 .env.*.local
+# Permite apenas o template de exemplo
+!.env.example
 
 # Build outputs
 .next/
@@ -39,6 +42,9 @@ yarn-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code (IDE — não vai para o repo)
+.claude/
 
 # Prisma
 packages/database/src/generated

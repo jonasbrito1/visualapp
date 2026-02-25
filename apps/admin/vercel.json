@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && npm run build --filter=@visualapp/admin",
+  "installCommand": "cd ../.. && npm install",
+  "outputDirectory": ".next"
+}
