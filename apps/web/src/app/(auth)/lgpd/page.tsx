@@ -14,6 +14,31 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+/** Renderiza texto com **negrito** como <strong> */
+function RichText({ text }: { text: string }) {
+  return (
+    <span className="whitespace-pre-line">
+      {text.split("\n").map((line, i) => {
+        const parts = line.split(/\*\*(.+?)\*\*/g);
+        return (
+          <span key={i}>
+            {parts.map((part, j) =>
+              j % 2 === 1 ? (
+                <strong key={j} className="font-semibold text-foreground">
+                  {part}
+                </strong>
+              ) : (
+                part
+              )
+            )}
+            {i < text.split("\n").length - 1 && "\n"}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 const LGPD_SECTIONS = [
   {
     id: "coleta",
@@ -155,8 +180,8 @@ export default function LGPDPage() {
               {expandedSection === section.id && (
                 <CardContent className="pt-0 pb-5">
                   <div className="border-t pt-4">
-                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                      {section.content}
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      <RichText text={section.content} />
                     </p>
                   </div>
                 </CardContent>
