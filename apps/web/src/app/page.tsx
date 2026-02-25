@@ -45,7 +45,7 @@ export default function HomePage() {
 
             <h1 className="text-4xl md:text-6xl font-black text-foreground mb-6 leading-tight">
               Moda infantil{" "}
-              <span className="text-transparent bg-clip-text gradient-brand">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">
                 personalizada
               </span>{" "}
               para cada criança
