@@ -1,15 +1,21 @@
-import NextAuth, { type NextAuthConfig } from "next-auth";
+/**
+ * auth.ts — Full auth configuration (Node.js only, admin)
+ * NÃO deve ser importado no middleware.
+ */
+import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@visualapp/database";
 import { z } from "zod";
+import { authConfig } from "./auth.config";
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
 
-export const authConfig: NextAuthConfig = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       name: "admin-credentials",
@@ -27,32 +33,14 @@ export const authConfig: NextAuthConfig = {
 
         if (!user || user.role !== "ADMIN" || !user.active) return null;
 
-        const passwordMatch = await bcrypt.compare(parsed.data.password, user.password);
+        const passwordMatch = await bcrypt.compare(
+          parsed.data.password,
+          user.password
+        );
         if (!passwordMatch) return null;
 
         return { id: user.id, email: user.email, name: user.name, role: user.role };
       },
     }),
   ],
-  session: { strategy: "jwt", maxAge: 8 * 60 * 60 }, // 8h session
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = (user as { role: string }).role;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-      }
-      return session;
-    },
-  },
-  pages: { signIn: "/login" },
-  secret: process.env.NEXTAUTH_SECRET,
-};
-
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+});

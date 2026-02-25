@@ -1,42 +1,13 @@
-import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
+/**
+ * middleware.ts — Edge-compatible
+ * Usa apenas authConfig (sem bcrypt/Prisma) para manter o bundle < 1 MB.
+ * A lógica de roteamento fica no callback `authorized` em auth.config.ts.
+ */
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
 
-const PUBLIC_ROUTES = [
-  "/",
-  "/login",
-  "/register",
-  "/lgpd",
-  "/produtos",
-];
-
-const AUTH_ROUTES = ["/login", "/register", "/lgpd"];
-
-export default auth((req) => {
-  const { nextUrl, auth: session } = req;
-  const isLoggedIn = !!session;
-
-  const isPublicRoute = PUBLIC_ROUTES.some(
-    (route) =>
-      nextUrl.pathname === route || nextUrl.pathname.startsWith("/produtos")
-  );
-  const isAuthRoute = AUTH_ROUTES.some(
-    (route) => nextUrl.pathname === route
-  );
-
-  // Se está na rota de auth e já está logado, redireciona para dashboard
-  if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/dashboard", nextUrl));
-  }
-
-  // Se rota protegida e não está logado, redireciona para login
-  if (!isPublicRoute && !isLoggedIn) {
-    const loginUrl = new URL("/login", nextUrl);
-    loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return NextResponse.next();
-});
+export const { auth: middleware } = NextAuth(authConfig);
+export default middleware;
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|icons|images).*)"],
