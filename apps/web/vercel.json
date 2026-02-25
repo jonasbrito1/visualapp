@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && npx turbo run build --filter=@visualapp/web",
+  "buildCommand": "cd ../.. && npx prisma generate --schema=packages/database/prisma/schema.prisma && npx turbo run build --filter=@visualapp/web",
   "installCommand": "cd ../.. && npm install",
   "outputDirectory": ".next"
 }
