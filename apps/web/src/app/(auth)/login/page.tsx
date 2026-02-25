@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -20,7 +20,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -60,6 +60,53 @@ export default function LoginPage() {
   };
 
   return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <Input
+        {...register("email")}
+        type="email"
+        label="E-mail"
+        placeholder="seu@email.com"
+        error={errors.email?.message}
+        autoComplete="email"
+      />
+
+      <Input
+        {...register("password")}
+        type={showPassword ? "text" : "password"}
+        label="Senha"
+        placeholder="Sua senha"
+        error={errors.password?.message}
+        rightIcon={
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
+          </button>
+        }
+      />
+
+      <Button
+        type="submit"
+        size="lg"
+        variant="brand"
+        loading={loading}
+        className="w-full gap-2"
+      >
+        <LogIn className="w-5 h-5" />
+        Entrar
+      </Button>
+    </form>
+  );
+}
+
+export default function LoginPage() {
+  return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
       {/* Header */}
       <header className="glass border-b border-white/30">
@@ -82,48 +129,9 @@ export default function LoginPage() {
               <CardDescription>Entre com seu e-mail e senha</CardDescription>
             </CardHeader>
             <CardContent className="pt-4">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <Input
-                  {...register("email")}
-                  type="email"
-                  label="E-mail"
-                  placeholder="seu@email.com"
-                  error={errors.email?.message}
-                  autoComplete="email"
-                />
-
-                <Input
-                  {...register("password")}
-                  type={showPassword ? "text" : "password"}
-                  label="Senha"
-                  placeholder="Sua senha"
-                  error={errors.password?.message}
-                  rightIcon={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  }
-                />
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  variant="brand"
-                  loading={loading}
-                  className="w-full gap-2"
-                >
-                  <LogIn className="w-5 h-5" />
-                  Entrar
-                </Button>
-              </form>
+              <Suspense fallback={<div className="h-40 flex items-center justify-center text-2xl">🐢</div>}>
+                <LoginForm />
+              </Suspense>
 
               <p className="text-center text-sm text-muted-foreground mt-4">
                 Não tem conta?{" "}
