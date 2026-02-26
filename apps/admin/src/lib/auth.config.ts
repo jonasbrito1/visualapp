@@ -6,6 +6,7 @@ import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
   providers: [], // Credentials adicionado somente em auth.ts (Node.js)
+  trustHost: true,
   session: {
     strategy: "jwt" as const,
     maxAge: 8 * 60 * 60, // 8 horas

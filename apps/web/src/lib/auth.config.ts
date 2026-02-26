@@ -10,6 +10,7 @@ const AUTH_PATHS = ["/login", "/register", "/lgpd"];
 
 export const authConfig = {
   providers: [], // Credentials adicionado somente em auth.ts (Node.js)
+  trustHost: true,
   session: {
     strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60, // 30 dias
